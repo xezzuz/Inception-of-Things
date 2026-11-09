@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-SERVER_NODE := nazouz
+SERVER_NODE := nazouzS
 
 up:
 	vagrant up

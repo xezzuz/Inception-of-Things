@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := help
 
 SERVER_NODE := nazouzS
-WORKER_NODE := hel-maghSW
+WORKER_NODE := nazouzSW
 
 token:
 	./scripts/generate-k3s-token.sh

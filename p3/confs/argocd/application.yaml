@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1  # Argo CD API group/version that provides Applications
+kind: Application                 # Declarative GitOps application managed by Argo CD
+metadata:                         # Identity information about this Application
+  name: playground-dev            # Name shown by Argo CD for the development workload
+  namespace: argocd               # Argo CD watches Application resources in this namespace
+spec:                             # Desired Git source, destination, and synchronization behavior
+  project: default                # Use Argo CD's built-in project and its default permissions
+  source:                         # Repository containing the Kubernetes manifests to reconcile
+    repoURL: https://github.com/xezzuz/GitOps-ArgoCD-Lab-nazouz.git  # GitOps repository URL
+    targetRevision: main          # Branch Argo CD continuously observes
+    path: .                       # Manifest directory relative to the repository root
+  destination:                    # Cluster and namespace that receive the rendered manifests
+    server: https://kubernetes.default.svc  # Kubernetes API endpoint for this cluster
+    namespace: dev                # Target namespace for the application resources
+  syncPolicy:
+    automated:                    # Reconcile automatically when Git differs from the cluster
+      prune: true                 # Delete resources removed from the tracked Git manifests
+      selfHeal: true              # Restore drifted resources to their Git-defined state

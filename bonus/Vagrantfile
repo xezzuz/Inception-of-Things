@@ -1,0 +1,25 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "cloud-image/debian-13"
+  config.vm.box_architecture = "arm64"
+  config.vm.synced_folder ".", "/vagrant/", type: "rsync"
+  # TODO: add box_url
+
+  config.vm.disk :disk, size: "50GB", primary: true
+
+  config.vm.define "nazouzBonus" do |bonus|
+    bonus.vm.hostname = "nazouzBonus"
+    bonus.vm.network "private_network", ip: "192.168.56.120"
+
+    bonus.vm.provider "virtualbox" do |vb|
+      vb.name = "nazouzBonus"
+      vb.memory = 8192
+      vb.cpus = 4
+    end
+
+    bonus.vm.provision "shell", path: "scripts/install-tools.sh"
+    bonus.vm.provision "shell", path: "scripts/install-gitlab.sh"
+    bonus.vm.provision "shell", path: "scripts/bootstrap-gitops-repo.sh"
+    bonus.vm.provision "shell", path: "scripts/setup-cluster.sh", privileged: false
+    bonus.vm.provision "shell", path: "scripts/setup-argocd.sh", privileged: false
+  end
+end

@@ -1,0 +1,12 @@
+apiVersion: v1                    # Core Kubernetes API version used by Services
+kind: Service                     # Provides a stable in-cluster endpoint for the Pods
+metadata:                         # Identity information about this Service
+  name: playground                # DNS name used by the Ingress backend
+  namespace: dev                  # Service and selected Pods share this namespace
+spec:                             # Desired virtual-IP and traffic-forwarding configuration
+  selector:                       # Find Pods that should receive Service traffic
+    app: playground               # Matches the label on the Deployment's Pod template
+  ports:
+    - name: http                  # Named port referenced by the Ingress
+      port: 80                    # Port exposed by the Service
+      targetPort: http            # Forward to the container port named http

@@ -1,0 +1,39 @@
+apiVersion: networking.k8s.io/v1  # Kubernetes API group/version that provides Ingress
+kind: Ingress                     # Routes incoming HTTP traffic to Services
+metadata:                         # Identity information about this Ingress
+  name: apps-ingress              # One shared entry point for all three applications
+spec:                             # Desired HTTP routing configuration
+  ingressClassName: traefik       # Use the Traefik controller bundled with K3s
+
+  rules:                          # Evaluate these host and path routing rules in order
+    - host: app1.com              # Requests with Host: app1.com select app1
+      http:                       # HTTP routing configuration for this host
+        paths:
+          - path: /               # Match every path below the site's root
+            pathType: Prefix      # Treat / as a URL-prefix match
+            backend:              # Send matching traffic to this Service
+              service:
+                name: app-one  # Service that fronts the app1 Pods
+                port:
+                  number: 80      # Service port exposed to the Ingress
+
+    - host: app2.com              # Requests with Host: app2.com select app2
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: app-two  # Service that fronts the app2 Pods
+                port:
+                  number: 80
+
+    - http:                       # Rule without a host is the fallback route
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: app-three  # Service that fronts the fallback app3 Pods
+                port:
+                  number: 80

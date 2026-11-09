@@ -1,0 +1,6 @@
+# Local Vagrant machine state and credentials
+**/.vagrant/
+
+# K3s join credential shared during p1 provisioning
+/p1/shared/*
+!/p1/shared/.gitkeep

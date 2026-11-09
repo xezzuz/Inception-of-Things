@@ -1,0 +1,26 @@
+apiVersion: apps/v1       # Kubernetes API group/version that provides Deployment
+
+kind: Deployment          # The type of Kubernetes object we are creating
+metadata:                 # Identity information about this object
+  name: app-one              # Its name inside the Kubernetes namespace
+
+spec:                     # Desired state: what Kubernetes should maintain
+  replicas: 1             # Keep exactly one app1 Pod running
+
+  selector:               # How this Deployment finds the Pods it owns
+    matchLabels:
+      app: app1           # It owns Pods whose label is app=app1
+
+  template:               # Blueprint Kubernetes uses to create each Pod
+    metadata:             # Identity information about this object
+      labels:
+        app: app1         # Label assigned to every Pod created from this template
+
+    spec:                 # Desired state of the Pod itself
+      containers:         # A Pod can run one or more containers; this is a list
+        - name: app1      # Name of this container within its Pod
+          image: hashicorp/http-echo:1.0  # Container image to download and run
+          args:           # Extra arguments passed to the image’s default command
+            - "-text=Hello from app1"  # Makes http-echo return this response
+          ports:          # Documents which port the application listens on
+            - containerPort: 5678  # http-echo's internal listening port

@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1  # Kubernetes API group/version that provides Ingress
+kind: Ingress                     # Routes external HTTP traffic to the playground Service
+metadata:                         # Identity information about this Ingress
+  name: playground                # Ingress name within the dev namespace
+  namespace: dev                  # The backend Service is resolved in this namespace
+spec:                             # Desired HTTP routing configuration
+  ingressClassName: traefik       # Use the Traefik controller installed by K3s
+  rules:
+    - http:                       # A hostless rule accepts requests for any Host header
+        paths:
+          - path: /               # Route every URL path from the site's root
+            pathType: Prefix      # Match / and all paths beneath it
+            backend:              # Forward matching traffic to this Service
+              service:
+                name: playground  # Service that selects the playground Pods
+                port:
+                  name: http      # Named Service port exposed by the workload

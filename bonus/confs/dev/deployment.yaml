@@ -1,0 +1,21 @@
+apiVersion: apps/v1               # Kubernetes API group/version that provides Deployments
+kind: Deployment                  # Maintains the requested number of application Pods
+metadata:                          # Identity information about this Deployment
+  name: playground                # Deployment name within the dev namespace
+  namespace: dev                  # Isolate this workload in the required development namespace
+spec:                              # Desired workload state
+  replicas: 1                      # Keep one playground Pod running
+  selector:                        # Labels used to find Pods owned by this Deployment
+    matchLabels:
+      app: playground              # Must match the Pod template label below
+  template:                        # Blueprint Kubernetes uses to create each Pod
+    metadata:
+      labels:
+        app: playground            # Label selected by this Deployment and its Service
+    spec:                           # Desired state of each generated Pod
+      containers:
+        - name: playground         # Container name within the Pod
+          image: xezzuz/http-echo-nazouz:v1  # Multi-architecture application image and initial version
+          ports:
+            - name: http           # Named port referenced by the Service
+              containerPort: 8888   # Port on which the application listens

@@ -3,6 +3,10 @@
 
 set -euo pipefail
 
+if ! id -nG | grep -qw docker; then
+  exec sg docker -c 'exec "$0" "$@"' "$0" "$@"
+fi
+
 CLUSTER_NAME="iot-bonus"
 
 if k3d cluster get "$CLUSTER_NAME" >/dev/null 2>&1; then

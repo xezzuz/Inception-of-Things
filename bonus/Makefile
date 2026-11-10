@@ -1,6 +1,7 @@
 .DEFAULT_GOAL := help
 
 SERVER_NODE := nazouzBonus
+SERVER_IP := 192.168.56.120
 
 up:
 	vagrant up
@@ -30,6 +31,13 @@ gitlab-password:
 
 argocd-password:
 	vagrant ssh $(SERVER_NODE) -c 'argocd admin initial-password -n argocd'
+
+argocd-ui:
+	@echo "Log in with username: admin"
+	@printf "Password: "
+	@vagrant ssh $(SERVER_NODE) -c 'argocd admin initial-password -n argocd'
+	@echo "Argo CD UI: https://$(SERVER_IP):8080 (press Ctrl-C to stop)"
+	vagrant ssh $(SERVER_NODE) -c 'kubectl -n argocd port-forward service/argocd-server 8080:443 --address 0.0.0.0'
 
 nodes:
 	vagrant ssh $(SERVER_NODE) -c 'kubectl get nodes -o wide'
@@ -61,6 +69,7 @@ help:
 	@echo "  make ssh-server  Open an SSH session on the bonus server"
 	@echo "  make gitlab-password  Print GitLab's initial root password (available for 24 hours)"
 	@echo "  make argocd-password  Print Argo CD's initial admin password"
+	@echo "  make argocd-ui  Expose the Argo CD UI at https://$(SERVER_IP):8080"
 	@echo "  make nodes       Show Kubernetes nodes"
 	@echo "  make pods        Show pods in every namespace"
 	@echo "  make verify      Confirm Argo CD sync and the playground endpoint"
@@ -68,4 +77,4 @@ help:
 	@echo "  make fclean      Destroy the VM and remove local Vagrant state"
 	@echo "  make re          Fully rebuild the bonus VM and workloads"
 
-.PHONY: help up down reload provision status validate ssh-server gitlab-password argocd-password nodes pods verify clean fclean re
+.PHONY: help up down reload provision status validate ssh-server gitlab-password argocd-password argocd-ui nodes pods verify clean fclean re

@@ -40,6 +40,13 @@ pods:
 argocd-password:
 	argocd admin initial-password --kube-context k3d-$(CLUSTER_NAME) -n argocd
 
+argocd-ui:
+	@echo "Log in with username: admin"
+	@printf "Password: "
+	@argocd admin initial-password --kube-context k3d-$(CLUSTER_NAME) -n argocd
+	@echo "Argo CD UI: https://127.0.0.1:8080 (press Ctrl-C to stop)"
+	$(KUBECTL) -n argocd port-forward service/argocd-server 8080:443 --address 0.0.0.0
+
 verify:
 	$(KUBECTL) wait --for=jsonpath='{.status.sync.status}'=Synced application/playground-dev -n argocd --timeout=5m
 	$(KUBECTL) wait --for=jsonpath='{.status.health.status}'=Healthy application/playground-dev -n argocd --timeout=5m
@@ -63,7 +70,8 @@ help:
 	@echo "make nodes     Show Kubernetes nodes"
 	@echo "make pods      Show Pods across namespaces"
 	@echo "make argocd-password  Print Argo CD's initial admin password"
+	@echo "make argocd-ui  Expose the Argo CD UI at https://127.0.0.1:8080"
 	@echo "make verify    Wait for GitOps sync/health and test the HTTP endpoint"
 	@echo "make validate  Check Bash syntax"
 
-.PHONY: help install up start down stop clean destroy re status nodes pods argocd-password verify validate
+.PHONY: help install up start down stop clean destroy re status nodes pods argocd-password argocd-ui verify validate

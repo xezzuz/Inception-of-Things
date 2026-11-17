@@ -4,7 +4,14 @@
 set -euo pipefail
 
 if ! id -nG | grep -qw docker; then
-  exec sg docker -c 'exec "$0" "$@"' "$0" "$@"
+  # sg drops trailing arguments, so re-exec by path. Avoid looping if the
+  # refreshed session still does not have the Docker group.
+  [[ -n "${CLUSTER_SG_RETRY:-}" ]] && {
+    echo "vagrant is not in the docker group" >&2
+    exit 1
+  }
+  export CLUSTER_SG_RETRY=1
+  exec sg docker -c "$0"
 fi
 
 CLUSTER_NAME="iot-bonus"
